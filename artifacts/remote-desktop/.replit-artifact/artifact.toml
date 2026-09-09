@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Remote Desktop"
+version = "1.0.0"
+id = "artifacts/remote-desktop"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18282
+
+[services.development]
+run = "pnpm --filter @workspace/remote-desktop run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/remote-desktop", "run", "build" ]
+publicDir = "artifacts/remote-desktop/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18282"
+BASE_PATH = "/"
