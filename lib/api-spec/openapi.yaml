@@ -1,0 +1,150 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Remote Desktop signaling API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: sessions
+    description: Remote session management
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /sessions:
+    post:
+      operationId: createSession
+      tags: [sessions]
+      summary: Create a new remote session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionInput"
+      responses:
+        "201":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+  /sessions/{code}:
+    get:
+      operationId: getSession
+      tags: [sessions]
+      summary: Get session by code
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Session found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteSession
+      tags: [sessions]
+      summary: Delete a session
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Session deleted
+  /sessions/active:
+    get:
+      operationId: listActiveSessions
+      tags: [sessions]
+      summary: List all active sessions
+      responses:
+        "200":
+          description: Active sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    SessionInput:
+      type: object
+      properties:
+        hostName:
+          type: string
+          description: Name of the host machine
+      required:
+        - hostName
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+          description: 6-digit connection code
+        hostName:
+          type: string
+        status:
+          type: string
+          enum: [waiting, connected, disconnected]
+        createdAt:
+          type: string
+          format: date-time
+        connectedAt:
+          type: ["string", "null"]
+          format: date-time
+        peerCount:
+          type: integer
+      required:
+        - id
+        - code
+        - hostName
+        - status
+        - createdAt
+        - connectedAt
+        - peerCount
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
