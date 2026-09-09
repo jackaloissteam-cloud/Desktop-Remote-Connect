@@ -1,4 +1,4 @@
-# desktop-remote-connection 
+# RemoteLink
 
 Browser-basiertes Remote Desktop Tool — Windows PC Bildschirm direkt auf dem iPhone anzeigen und steuern, ohne Software-Installation.
 
@@ -148,6 +148,14 @@ App ist dann erreichbar unter: `http://localhost:18282`
 
 Beim lokalen Start leitet das Frontend die Anfragen unter `/api` und `/api/ws`
 automatisch an den API-Server auf Port `8080` weiter.
+
+### Vercel
+
+Das Frontend ist für Vercel als Vite-Projekt konfiguriert. Die Root-Konfiguration
+verwendet automatisch `pnpm install --frozen-lockfile` und baut nur das
+Frontend-Paket. Für eine vollständige RemoteLink-Verbindung muss der
+API-Server inklusive WebSocket-Endpunkt zusätzlich unter einer erreichbaren
+öffentlichen Adresse laufen.
 
 ---
 
