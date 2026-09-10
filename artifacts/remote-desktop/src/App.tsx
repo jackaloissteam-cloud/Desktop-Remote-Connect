@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Host from "@/pages/host";
 import Connect from "@/pages/connect";
 import Anleitung from "@/pages/anleitung";
+import AiHelp from "@/components/ai-help";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ function App() {
           <Router />
         </WouterRouter>
         <Toaster />
+        <AiHelp />
       </TooltipProvider>
     </QueryClientProvider>
   );
