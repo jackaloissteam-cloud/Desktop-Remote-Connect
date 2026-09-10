@@ -68,9 +68,24 @@ export default function Connect() {
 
   const connect = () => {
     if (code.length !== 6) return;
+
+    if (typeof RTCPeerConnection === "undefined" || typeof WebSocket === "undefined") {
+      setConnectState("error");
+      setErrorMsg("Dieser Browser unterstützt die benötigte WebRTC-Verbindung nicht. Bitte nutze Safari oder einen aktuellen Chrome-Browser.");
+      return;
+    }
+
     setConnectState("connecting");
 
-    const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    let pc: RTCPeerConnection;
+    try {
+      pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    } catch {
+      setConnectState("error");
+      setErrorMsg("Die Browser-Verbindung konnte nicht gestartet werden. Bitte lade die Seite neu und versuche es erneut.");
+      return;
+    }
+
     pcRef.current = pc;
 
     pc.ontrack = (e) => {
@@ -98,9 +113,25 @@ export default function Connect() {
       }
     };
 
-    wsManager.connect();
+    try {
+      wsManager.connect();
+    } catch {
+      cleanup();
+      setConnectState("error");
+      setErrorMsg("Die Verbindung zum RemoteLink-Server konnte nicht gestartet werden. Bitte prüfe das Netzwerk.");
+      return;
+    }
+
     setTimeout(() => {
-      wsManager.send({ type: "register", code, role: "client" });
+      if (pcRef.current === pc) {
+        try {
+          wsManager.send({ type: "register", code, role: "client" });
+        } catch {
+          cleanup();
+          setConnectState("error");
+          setErrorMsg("Die Verbindung zum RemoteLink-Server ist fehlgeschlagen. Bitte versuche es erneut.");
+        }
+      }
     }, 500);
   };
 
