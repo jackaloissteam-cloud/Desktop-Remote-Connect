@@ -2,5 +2,5 @@
   "framework": "vite",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/remote-desktop run build",
-  "outputDirectory": "artifacts/remote-desktop/dist/public"
+  "outputDirectory": "artifacts/remote-desktop/dist"
 }
